@@ -1,0 +1,24 @@
+- name: Ensure git is installed
+  package:
+    name: git
+    state: present
+
+- name: Clone application repository
+  git:
+    repo: "https://github.com/saroj580/MERNStack-Todo-Application-with-MySQL-Database.git" 
+    dest: /todo-app
+    version: main
+
+- name: Remove default NGINX HTML content
+  file:
+    path: /usr/share/nginx/html
+    state: absent
+
+- name: Deploy application content to NGINX web root
+  copy:
+    src: /todo-app
+    dest: /usr/share/nginx/html/
+    owner: nginx
+    group: nginx
+    mode: '0755'
+  notify: restart nginx
