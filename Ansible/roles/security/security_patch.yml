@@ -1,0 +1,10 @@
+- name: Check if DNF is available
+  stat:
+    path: /usr/bin/dnf
+  register: dnf_check
+
+- name: Apply security updates using DNF
+  command: dnf update --security -y
+  when: dnf_check.stat.exists
+
+

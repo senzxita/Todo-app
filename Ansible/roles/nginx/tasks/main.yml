@@ -1,0 +1,32 @@
+- name: Install EPEL repository (for RHEL/CentOS-based systems)
+  when: ansible_os_family == "RedHat"
+  package:
+    name: epel-release
+    state: present
+
+- name: Install NGINX
+  package:
+    name: nginx
+    state: present
+
+- name: Create custom NGINX index.html
+  copy:
+    dest: /usr/share/nginx/html/index.html
+    content: |
+      <html>
+      <head><title>Welcome to Ansible NGINX!</title></head>
+      <body><h1>Deployed with Ansible 🎉</h1></body>
+      </html>
+    mode: '0644'
+
+- name: Ensure NGINX is enabled and running
+  service:
+    name: nginx
+    state: started
+    enabled: yes
+
+- name: Start and enable NGINX service
+  service:
+    name: nginx
+    state: started
+    enabled: yes
