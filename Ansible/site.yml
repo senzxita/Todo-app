@@ -3,7 +3,6 @@
   become: yes
   roles:
     - security
-    - nginx
 
 - name: Configure NGINX
   hosts: dev
@@ -11,8 +10,9 @@
   roles:
     - nginx
 
+
 - name: Configure TODO app
   hosts: dev
   become: yes
   roles:
-    - nginx
+    - app
