@@ -9,6 +9,14 @@
     name: nginx
     state: present
 
+- name: Ensure nginx html directory exists
+  file:
+    path: /usr/share/nginx/html
+    state: directory
+    owner: nginx
+    group: nginx
+    mode: '0755'
+
 - name: Create custom NGINX index.html
   copy:
     dest: /usr/share/nginx/html/index.html
@@ -25,8 +33,3 @@
     state: started
     enabled: yes
 
-- name: Start and enable NGINX service
-  service:
-    name: nginx
-    state: started
-    enabled: yes

@@ -5,20 +5,133 @@
 
 - name: Clone application repository
   git:
-    repo: "https://github.com/saroj580/MERNStack-Todo-Application-with-MySQL-Database.git" 
-    dest: /todo-app
-    version: main
+    repo: "https://github.com/senzxita/Todo-app.git"
+    dest: /var/www/Todo-app
+    version: dev
+    force: yes
 
 - name: Remove default NGINX HTML content
   file:
     path: /usr/share/nginx/html
     state: absent
 
-- name: Deploy application content to NGINX web root
+- name: Install Node.js and npm
+  yum:
+    name: nodejs
+    state: present
+  become: true
+
+- name: Install npm
+  yum:
+    name: npm
+    state: present
+  become: true
+
+
+- name: Install frontend dependencies
+  shell: npm install
+  args:
+    chdir: /var/www/Todo-app/frontend
+
+- name: Build frontend
+  shell: npm run build
+  args:
+    chdir: /var/www/Todo-app/frontend
+
+- name: Deploy frontend build to NGINX web root
   copy:
-    src: /todo-app
+    src: /var/www/Todo-app/frontend/build/
     dest: /usr/share/nginx/html/
     owner: nginx
     group: nginx
     mode: '0755'
   notify: restart nginx
+
+- name: Configure application with MongoDB settings
+  template:
+    src: app_config.j2
+    dest: /etc/myapp/config.yml
+    mode: '0644'
+
+- name: Create backend .env file
+  template:
+    src: .env.j2
+    dest: /var/www/Todo-app/backend/.env
+    mode: '0600'
+
+- name: Install backend dependencies
+  shell: npm install
+  args:
+    chdir: /var/www/Todo-app/backend
+
+- name: Install PM2 globally
+  community.general.npm:
+    name: pm2
+    global: yes
+    state: present
+
+
+- name: Start backend using PM2
+  shell: pm2 start server.js --name todo-backend
+  args:
+    chdir: /var/www/Todo-app/backend
+
+
+
+
+# - name: Ensure git is installed
+#   package:
+#     name: git
+#     state: present
+
+# - name: Clone application repository
+#   git:
+#     repo: "https://github.com/senzxita/Todo-app.git" 
+#     dest: /var/www/Todo-app
+#     version: dev
+
+# - name: Remove default NGINX HTML content
+#   file:
+#     path: /usr/share/nginx/html
+#     state: absent
+
+# - name: Deploy application content to NGINX web root
+#   copy:
+#     src: /Todo-app
+#     dest: /usr/share/nginx/html/
+#     owner: nginx
+#     group: nginx
+#     mode: '0755'
+#   notify: restart nginx
+
+
+# - name: Configure application with MongoDB settings
+#   template:
+#     src: app_config.j2
+#     dest: /etc/myapp/config.yml
+
+# - name: Create backend .env file
+#   template:
+#     src: .env.j2
+#     dest: /var/www/Todo-app/backend/.env
+#     mode: '0600'
+
+# - name: Install backend dependencies
+#   shell: npm install
+#   args:
+#     chdir: /var/www/Todo-app/backend
+
+# - name: Start backend with Nodemon
+#   shell: nodemon server
+#   args:
+#     chdir: /var/www/Todo-app/backend
+
+# - name: Install frontend dependencies
+#   shell: npm install
+#   args:
+#     chdir: /var/www/Todo-app/frontend
+
+# - name: Start frontend with npm
+#   shell: npm start
+#   args:
+#     chdir: /var/www/Todo-app/frontend
