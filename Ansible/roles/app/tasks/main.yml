@@ -1,7 +1,15 @@
-- name: Ensure git is installed
+# - name: Ensure git is installed
+#   package:
+#     name: git
+#     state: present
+
+- name: Install dependencies
   package:
-    name: git
-    state: present
+      name:
+        - curl
+        - git
+        - bash
+      state: present
 
 - name: Clone application repository
   git:
@@ -10,33 +18,72 @@
     version: dev
     force: yes
 
-- name: Remove default NGINX HTML content
-  file:
-    path: /usr/share/nginx/html
-    state: absent
+# - name: Remove default NGINX HTML content
+#   file:
+#     path: /usr/share/nginx/html
+#     state: absent
 
-- name: Install Node.js and npm
-  yum:
-    name: nodejs
-    state: present
-  become: true
-
-- name: Install npm
-  yum:
-    name: npm
-    state: present
-  become: true
+# - name: Install Node.js and npm
+#   package:
+#     name: nodejs
+#     state: present
+#   become: true
 
 
-- name: Install frontend dependencies
-  shell: npm install
+# - name: Install NVM
+#   become: false
+#   shell: |
+#     curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+#   args:
+#     creates: /home/{{ ansible_user_id }}/.nvm/nvm.sh
+
+# - name: Load NVM environment
+#   shell: |
+#     export NVM_DIR="$HOME/.nvm"
+#     [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+#     nvm install 20
+#     nvm alias default 20
+#   args:
+#     executable: /bin/bash
+#   become: false
+
+# - name: Verify Node.js version
+#   shell: |
+#     export NVM_DIR="$HOME/.nvm"
+#     [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+#     node -v
+#   args:
+#     executable: /bin/bash
+#   register: node_version
+#   become: false
+
+# - name: Display Node.js version
+#   debug:
+#     msg: "Installed Node.js version: {{ node_version.stdout }}"
+
+
+#######################
+# 
+
+
+- name: Install NVM, Node.js LTS, and frontend dependencies, then build the app
+  shell: |
+    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.5/install.sh | bash
+
+    export NVM_DIR="$HOME/.nvm"
+    source $NVM_DIR/nvm.sh
+
+    nvm install --lts
+    nvm use --lts
+    nvm alias default lts/*
+
+    cd /var/www/Todo-app/frontend
+    npm install
+    npm run build
   args:
-    chdir: /var/www/Todo-app/frontend
+    executable: /bin/bash
 
-- name: Build frontend
-  shell: npm run build
-  args:
-    chdir: /var/www/Todo-app/frontend
+
 
 - name: Deploy frontend build to NGINX web root
   copy:
@@ -46,6 +93,14 @@
     group: nginx
     mode: '0755'
   notify: restart nginx
+
+- name: Ensure app config directory exists
+  file:
+    path: /etc/myapp
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
 
 - name: Configure application with MongoDB settings
   template:
@@ -59,22 +114,27 @@
     dest: /var/www/Todo-app/backend/.env
     mode: '0600'
 
-- name: Install backend dependencies
-  shell: npm install
+###################
+# 
+
+- name: Install NVM, Node.js LTS, backend dependencies, and PM2
+  shell: |
+    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.5/install.sh | bash
+
+    export NVM_DIR="$HOME/.nvm"
+    source $NVM_DIR/nvm.sh
+
+    nvm install --lts
+    nvm use --lts
+    nvm alias default lts/*
+
+    cd /var/www/Todo-app/backend
+    npm install
+
+    npm install -g pm2
   args:
-    chdir: /var/www/Todo-app/backend
+    executable: /bin/bash
 
-- name: Install PM2 globally
-  community.general.npm:
-    name: pm2
-    global: yes
-    state: present
-
-
-- name: Start backend using PM2
-  shell: pm2 start server.js --name todo-backend
-  args:
-    chdir: /var/www/Todo-app/backend
 
 
 
