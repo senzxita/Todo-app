@@ -1,9 +1,17 @@
-**/terraform.tfvars
-**.terraform/
-**.terraform.lock.hcl
-**.tfvars
-**.tfstate
-**.tfstate.*
-**terraform.tfstate
+# Ignore Terraform state files
+*.tfstate
+*.tfstate.*
+
+# Ignore terraform variables
+*.tfvars
+terraform.tfvars
+
+# Ignore lock files
+.terraform.lock.hcl
+
+# Ignore all .terraform directories at any level
 .terraform/
-terraform.tfstate.*
+**/.terraform/
+
+# Optional: Ignore crash logs
+crash.log
