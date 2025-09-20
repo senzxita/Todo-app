@@ -74,18 +74,3 @@ module "dev_ec2" {
 
 
 
-
-#   instance_type          = var.instance_type
-#   key_name               = var.key_name
-#   subnet_id              = module.dev_subnet.id
-#   vpc_security_group_ids = [module.dev_sg.id]
-#   market_type = var.market_type
-#   max_price   = var.max_price
-
-#   tags = {
-#     name        = var.name_ec2
-    
-#   }
-# }
-
-

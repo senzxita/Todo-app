@@ -21,5 +21,5 @@ data "aws_ami" "rhel10" {
     values = ["x86_64"]
   }
 
-  owners = ["309956199498"] # Red Hat account ID
+  owners = ["309956199498"] 
 }
