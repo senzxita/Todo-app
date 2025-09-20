@@ -17,3 +17,4 @@ terraform.tfvars
 
 # Optional: Ignore crash logs
 crash.log
+todo-shared-key.pem
