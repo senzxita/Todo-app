@@ -13,5 +13,7 @@ terraform.tfvars
 .terraform/
 **/.terraform/
 
+
+
 # Optional: Ignore crash logs
 crash.log

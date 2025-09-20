@@ -1,0 +1,126 @@
+variable "region" {
+  type = string
+  description = "The AWS region to deploy resources in"
+}
+variable "profile" {
+  type = string
+  description = "The AWS profile to use for authentication"
+}
+variable "owner_id" {
+  type        = string
+  description = "The owner ID for the resources"
+}
+variable "managedBy" {
+    type = string
+    description = "The tool managing the resources"
+}
+variable "vpc_id" {
+  type = string
+  description = "The ID of the shared VPC to deploy resources in"  
+}
+variable "cidr_block" {
+  type        = string
+  description = "The CIDR block for the subnet"
+}
+variable "availability_zone" {
+  type        = string
+  description = "The availability zone for the resource"
+}
+variable "environment" {
+  type        = string
+  description = "The environment tag for the resource"
+}
+variable "name_subnet" {
+  type        = string
+  description = "The name tag for the subnet"
+}
+
+# variables for security group
+variable "name_sg" {
+  type        = string
+  description = "The name tag for the security group"
+}
+variable "description_sg" {
+  type        = string
+  description = "The description of the security group"
+}
+
+# Ingress — allow SSH rules
+variable "ingress_cidr" {
+  type        = string
+  description = "The CIDR block for the ingress rule"
+}
+variable "ingress_description" {
+    type        = string
+    description = "The description for the ingress rule"
+}
+variable "ingress_from_port" {
+  type        = number
+  description = "The starting port for the ingress rule"
+}
+variable "ingress_to_port" {
+  type        = number
+  description = "The ending port for the ingress rule"
+}
+variable "ingress_protocol" {
+  type        = string
+  description = "The protocol for the ingress rule (e.g., tcp, udp, icmp)"      
+}
+
+# Egress — allow all rules
+variable "egress_cidr" {
+    type        = string
+    description = "The CIDR block for the egress rule"
+}
+variable "egress_description" {
+  type        = string
+  description = "The description for the egress rule"
+}
+
+variable "egress_ip_protocol" {
+    type        = string
+    description = "The protocol for the egress rule (e.g., tcp, udp, icmp)"      
+}
+
+# variables for ec2 instance
+variable "name_ec2" {
+    type        = string
+    description = "The name tag for the EC2 instance"
+}
+variable "create_spot_instance" {
+    type        = bool
+    description = "Whether to create a spot instance"
+}
+variable "max_price" {
+    type        = string
+    description = "The maximum price for spot instances"
+}
+variable "spot_type" {
+    type        = string
+    description = "The spot instance type (e.g., 'one-time' or 'persistent')"
+  
+}
+variable "instance_type" {
+  type        = string
+  description = "The type of instance to create"
+  
+}
+variable "key_name" {
+    type        = string
+    description = "The name of the key pair to use for the instance"
+}
+
+# variable "market_type" {
+#     type        = string
+#     description = "The market type for the instance" 
+# }
+
+
+
+
+
+
+
+
+
+
